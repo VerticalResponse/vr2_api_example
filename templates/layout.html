@@ -1,0 +1,70 @@
+{{define "card"}}
+<article class="check" id="card-{{.Key}}">
+  <h3>
+    <code>GET {{.Shown}}</code>
+    {{if .Ran}}
+      {{if .Result.Failure}}
+      <span class="status bad">failed</span>
+      {{else}}
+      <span class="status {{if lt .Result.Status 300}}ok{{else}}bad{{end}}">{{.Result.Status}}</span>
+      <span class="ms">{{millis .Result.Duration}}</span>
+      {{end}}
+    {{end}}
+  </h3>
+
+  <p class="hint">{{.Summary}}</p>
+
+  <form method="post" action="/call/{{.Key}}" class="inline">
+    {{if .Param}}
+    <input type="text" name="{{.Param.Name}}" value="{{.Result.Input}}"
+           placeholder="{{.Param.Placeholder}}" inputmode="numeric"
+           autocomplete="off" spellcheck="false" required>
+    {{end}}
+    <button type="submit">Send</button>
+  </form>
+
+  {{if .Ran}}
+    {{if .Result.Failure}}
+    <p class="problem">{{.Result.Failure}}</p>
+    {{else}}
+    <pre>{{.Result.Body}}</pre>
+    {{end}}
+  {{end}}
+</article>
+{{end}}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}} — VerticalResponse API example</title>
+<link rel="stylesheet" href="/static/pico.min.css">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <a href="/">VerticalResponse API example</a>
+    <nav>
+      <ul>
+        <li><a href="/console">Console</a></li>
+        {{if .Revoked}}<li><span class="tag revoked">authorization revoked</span></li>{{end}}
+      </ul>
+    </nav>
+  </div>
+  <dl class="env">
+    <div><dt>Gateway</dt><dd>{{.Config.Gateway}}</dd></div>
+    <div><dt>Provider</dt><dd>{{.Config.Provider}}</dd></div>
+    <div><dt>Redirect URI</dt><dd>{{.Config.Redirect}}</dd></div>
+  </dl>
+</header>
+
+<main>
+  {{if .Notice}}<p class="notice">{{.Notice}}</p>{{end}}
+  {{if .Problem}}<p class="problem">{{.Problem}}</p>{{end}}
+  {{template "content" .}}
+</main>
+
+</body>
+</html>

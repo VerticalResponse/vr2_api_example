@@ -1,0 +1,28 @@
+{{define "content"}}
+<h2>Revoke this authorization</h2>
+
+<p>
+  This sends <code>DELETE {{.Config.Provider}}/api/v1/oauth/revoke</code> with the
+  client credentials and the current refresh token. That endpoint is not in the
+  gateway's endpoint list, so it goes straight to the application host.
+</p>
+
+<p>
+  The authorization ends immediately and the refresh token stops working, so the
+  next refresh fails with <code>400 invalid_grant</code>. That code is
+  deliberately broad — it covers a grant that is unknown, expired or revoked
+  alike — so read <code>error_description</code> to see which. The access token
+  you already hold keeps working until it expires: it is a stateless JWT, checked
+  by signature rather than looked up on each request.
+</p>
+
+<p class="hint">
+  The call answers <code>{"status":"ok"}</code> even for a refresh token that
+  does not exist, so a caller cannot use it to discover which tokens are real.
+</p>
+
+<form method="post" action="/revoke" class="inline">
+  <button type="submit" class="danger">Revoke</button>
+</form>
+<a class="button" href="/console">Cancel</a>
+{{end}}

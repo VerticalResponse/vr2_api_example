@@ -1,0 +1,34 @@
+{{define "content"}}
+<h2>That did not work</h2>
+
+{{if .Code}}
+<dl class="facts">
+  {{if .Status}}<dt>HTTP</dt><dd>{{.Status}}</dd>{{end}}
+  <dt>error</dt><dd><code>{{.Code}}</code></dd>
+  {{if .Meaning}}<dt>meaning</dt><dd>{{.Meaning}}</dd>{{end}}
+</dl>
+{{else if .Meaning}}
+<p>{{.Meaning}}</p>
+{{end}}
+
+{{if .Failures}}
+<h3>Rejected fields</h3>
+<table>
+  <tbody>
+    {{range $field, $reasons := .Failures}}
+    <tr>
+      <th><code>{{$field}}</code></th>
+      <td>{{range $i, $r := $reasons}}{{if $i}}; {{end}}{{$r}}{{end}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}
+
+{{if .Body}}
+<h3>Response body</h3>
+<pre>{{.Body}}</pre>
+{{end}}
+
+<p><a href="/">Start again</a>{{if .Connected}} · <a href="/console">Back to the console</a>{{end}}</p>
+{{end}}

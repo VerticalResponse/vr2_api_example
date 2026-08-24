@@ -1,0 +1,43 @@
+{{define "content"}}
+<h2>Console</h2>
+
+<dl class="facts">
+  <dt>expires</dt><dd>{{stamp .Token.ExpiresAt}}{{if .Token.Expired}} — expired{{end}}</dd>
+  <dt>refresh_token</dt><dd><code>{{fingerprint .Token.RefreshToken}}</code></dd>
+</dl>
+
+{{if .Revoked}}
+<p class="problem">
+  This authorization was revoked, so Refresh will fail with
+  <code>400 invalid_grant</code>. The access token above keeps working until it
+  expires — it is a signed JWT the gateway checks rather than a record it looks
+  up. <a href="/">Connect again</a> for a new authorization.
+</p>
+{{else if .Expired}}
+<p class="problem">
+  This access token has expired and every request below will come back 401.
+  Refresh for a new one: the refresh token normally outlives it.
+</p>
+{{end}}
+
+<p class="hint">
+  The refresh token is abbreviated so it can be compared by eye. It rotates on
+  every refresh: the value changes and the previous one stops working
+  immediately.
+</p>
+
+<form method="post" action="/refresh" class="inline">
+  <button type="submit">Refresh</button>
+</form>
+<a class="button danger" href="/revoke">Revoke…</a>
+
+<h3>Requests</h3>
+
+<p class="hint">
+  Every request here is a GET. Nothing on this page changes anything in the
+  account that granted the token, which is deliberate: this app is published and
+  runs against a live environment.
+</p>
+
+{{range .Cards}}{{template "card" .}}{{end}}
+{{end}}

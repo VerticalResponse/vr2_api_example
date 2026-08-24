@@ -1,0 +1,41 @@
+{{define "content"}}
+<h2>Connect an application</h2>
+
+<p>
+  Paste the credentials of an application registered in VerticalResponse. It has
+  to be a <strong>Delegated app</strong>, and its registered Redirect URI has to
+  be exactly the one shown above — the provider compares those two strings for
+  equality, with no wildcards and no tolerance for a trailing slash.
+</p>
+
+<form method="post" action="/connect">
+  <label for="client_id">client_id</label>
+  <input id="client_id" name="client_id" value="{{.ClientID}}" autocomplete="off" spellcheck="false" required>
+
+  <label for="client_secret">client_secret</label>
+  <input id="client_secret" name="client_secret" type="password" autocomplete="off" required>
+  <p class="hint">
+    Held in memory for this browser session and nowhere else. It is never
+    written to disk and never put in the cookie.
+  </p>
+
+  <button type="submit">Connect</button>
+</form>
+
+<h3>What happens next</h3>
+<ol class="steps">
+  <li>This app generates a random <code>state</code> and redirects your browser to the consent screen on the provider.</li>
+  <li>You approve, and the provider redirects back to <code>{{.Config.Redirect}}</code> with a code and the same <code>state</code>.</li>
+  <li>This app checks the <code>state</code>, then exchanges the code for an access token and a refresh token — a back-channel call, through the gateway, carrying the client secret.</li>
+</ol>
+
+<h3>Before you start</h3>
+
+<p class="hint">
+  This one needs no token, so it answers whether or not anything above has
+  worked yet. If it comes back and the console does not, the token is the
+  problem rather than the routing.
+</p>
+
+{{template "card" .Card}}
+{{end}}
